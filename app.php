@@ -5,7 +5,7 @@ date_default_timezone_set('Asia/Kolkata');
 require_once __DIR__.'/release-auth.php';
 $storage=getenv('INCENTIVE_STORAGE') ?: __DIR__.'/storage';
 $releaseCheck=null;
-if(isset($_SERVER['HTTP_X_RELEASE_CHECK'])){$releaseCheck=releaseClaim($_SERVER['HTTP_X_RELEASE_CHECK']);if(($releaseCheck['purpose']??'')!=='verification'||!preg_match('/^[a-f0-9]{32}$/',$releaseCheck['id']??''))fail('Invalid verification scope.',403);$storage.='/release-checks/'.$releaseCheck['id'];putenv('INCENTIVE_DEMO=1');}
+if(isset($_SERVER['HTTP_X_RELEASE_CHECK'])||isset($_COOKIE['incentive_verification'])){$releaseCheck=releaseClaim($_SERVER['HTTP_X_RELEASE_CHECK']??$_COOKIE['incentive_verification']);if(($releaseCheck['purpose']??'')!=='verification'||!preg_match('/^[a-f0-9]{32}$/',$releaseCheck['id']??''))fail('Invalid verification scope.',403);if(is_file($storage.'/release-checks/.revoked-'.$releaseCheck['id']))fail('Verification session has ended.',403);$storage.='/release-checks/'.$releaseCheck['id'];putenv('INCENTIVE_DEMO=1');}
 if(!is_dir($storage)) mkdir($storage,0700,true);
 if(!is_dir($storage.'/uploads')) mkdir($storage.'/uploads',0700,true);
 $db=new PDO('sqlite:'.$storage.'/incentives.sqlite');

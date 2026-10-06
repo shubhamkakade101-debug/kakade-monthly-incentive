@@ -1,7 +1,7 @@
 Options -Indexes
 DirectoryIndex index.php
 Require all denied
-<FilesMatch "^(index\.php|api\.php|owner-bootstrap\.php|release-check\.php|app\.js|style\.css)$">
+<FilesMatch "^(index\.php|api\.php|owner-bootstrap\.php|release-check\.php|browser-check\.php|app\.js|style\.css)$">
 Require all granted
 </FilesMatch>
 RewriteEngine On
