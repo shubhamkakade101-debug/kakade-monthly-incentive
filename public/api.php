@@ -10,7 +10,7 @@ if($post && !hash_equals($_SESSION['csrf'],$_SERVER['HTTP_X_CSRF_TOKEN']??''))fa
 $in=$post?(str_contains($_SERVER['CONTENT_TYPE']??'','application/json')?json_decode(file_get_contents('php://input'),true):$_POST):$_GET;
 $in=is_array($in)?$in:[];
 try {
-if($a==='session'){$out=['csrf'=>$_SESSION['csrf'],'user'=>isset($_SESSION['uid'])?array_diff_key(currentUser(),array_flip(['password','units'])):null];}
+if($a==='session'){$out=['csrf'=>$_SESSION['csrf'],'verification'=>$releaseCheck!==null,'user'=>isset($_SESSION['uid'])?array_diff_key(currentUser(),array_flip(['password','units'])):null];}
 elseif($a==='login'&&$post){$ip=$_SERVER['REMOTE_ADDR']??'local';$attempt=q('SELECT * FROM attempts WHERE ip=?',[$ip])->fetch(PDO::FETCH_ASSOC);if($attempt&&$attempt['count']>=10&&time()-$attempt['at']<300)fail('Too many attempts. Try again in five minutes.',429);$u=q('SELECT * FROM users WHERE username=? AND active=1',[$in['username']??''])->fetch(PDO::FETCH_ASSOC);if(!$u||!accountPassword($in['password']??'',$u['password'])){q('INSERT INTO attempts VALUES(?,1,?) ON CONFLICT(ip) DO UPDATE SET count=CASE WHEN at<? THEN 1 ELSE count+1 END,at=?',[$ip,time(),time()-300,time()]);fail('Incorrect login.',401);}q('DELETE FROM attempts WHERE ip=?',[$ip]);session_regenerate_id(true);$_SESSION['uid']=$u['id'];$out=['ok'=>true];}
 else {
 $u=currentUser();
