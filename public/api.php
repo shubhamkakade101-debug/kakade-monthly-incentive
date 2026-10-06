@@ -16,7 +16,7 @@ else {
 $u=currentUser();
 if($u['force_change']&& !in_array($a,['session','logout','state','change-password'],true))fail('Change your initial password first.',403);
 if($a==='state'&&$u['force_change']){header('Content-Type: application/json');echo json_encode(['forceChange'=>true,'csrf'=>$_SESSION['csrf']]);exit;}
-if($a==='logout'&&$post){$_SESSION=[];session_destroy();$out=['ok'=>true];}
+if($a==='logout'&&$post){$_SESSION=[];session_destroy();if($releaseCheck)setcookie('incentive_verification','',['expires'=>time()-3600,'path'=>'/','secure'=>!empty($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!=='off','httponly'=>true,'samesite'=>'Strict']);$out=['ok'=>true];}
 elseif($a==='change-password'&&$post){$password=(string)($in['password']??'');if(strlen($password)<12||strlen($password)>256)fail('Choose a password of 12 to 256 characters.');if(accountPassword($password,$u['password']))fail('Choose a different password.');q('UPDATE users SET password=?,force_change=0 WHERE id=?',[password_hash($password,PASSWORD_DEFAULT),$u['id']]);audit(null,(int)$u['id'],'Password changed');session_regenerate_id(true);$out=['ok'=>true];}
 elseif($a==='state'||$a==='export'){
 $requests=[];foreach(q('SELECT id FROM requests ORDER BY id DESC')->fetchAll(PDO::FETCH_COLUMN) as $id){$r=q('SELECT unit,requester FROM requests WHERE id=?',[$id])->fetch(PDO::FETCH_ASSOC);if(scope($u,(int)$r['unit'])&&($u['role']!=='Requester'||$u['reports']||(int)$r['requester']===(int)$u['id']))$requests[]=projected($u,viewRequest($u,(int)$id));}
