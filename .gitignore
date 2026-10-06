@@ -1,0 +1,6 @@
+storage/*
+!storage/.gitkeep
+__pycache__/
+*.pyc
+*.pem
+!config/release-public.pem

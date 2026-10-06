@@ -1,0 +1,6 @@
+Require all granted
+Options -Indexes
+DirectoryIndex index.php
+<FilesMatch "\.(sqlite|db|pem|json|log|py|md)$">
+Require all denied
+</FilesMatch>
