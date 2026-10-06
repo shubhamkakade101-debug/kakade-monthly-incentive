@@ -1,6 +1,6 @@
 Require all granted
 Options -Indexes
 DirectoryIndex index.php
-<FilesMatch "\.(sqlite|db|pem|json|log|py|md)$">
+<FilesMatch "\.(sqlite|db|pem|json|log|py|md|ini)$">
 Require all denied
 </FilesMatch>
